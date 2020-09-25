@@ -38,4 +38,6 @@
     <ProjectReference Include="..\..\BankingSDK.BE.Belfius\BankingSDK.BE.Belfius.csproj" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
 </Project>

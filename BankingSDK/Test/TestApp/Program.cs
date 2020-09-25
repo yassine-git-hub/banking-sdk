@@ -28,18 +28,22 @@ namespace TestApp
             // Setting general settings of BankingSDk
             BankSettings generalBankSettings = new BankSettings();
             generalBankSettings.NcaId = "VALID_NCA_ID";
-           // generalBankSettings.TlsCertificate = new X509Certificate2(  "\\Test\\TestApp\\ING-eidas_tls.pfx", "bankingsdk");
-           // generalBankSettings.SigningCertificate = new X509Certificate2("/Test/TestApp/ING-eidas_signing.pfx", "bankingsdk");
+            string filePath = @"C:\Users\Yassine\Documents\StageEntrainement\BankingSDK - Copie\BankingSDK\Test\TestApp\example_eidas_client_tls.cer";
+            string filePath2 = @"C:\Users\Yassine\Documents\StageEntrainement\BankingSDK - Copie\BankingSDK\Test\TestApp\example_eidas_client_signing.cer";
+
+            generalBankSettings.TlsCertificate = new X509Certificate2(filePath, "banking");
+            generalBankSettings.SigningCertificate = new X509Certificate2(filePath2, "banking");
 
 
-            SdkApiSettings.CompanyKey = "f954a771-509b-43c9-a064-0a3f9c9bb9d3";
-            SdkApiSettings.ApplicationKey = "4d972ae0-13cf-44ad-a20a-9ff44b884ce7";
-            SdkApiSettings.Secret = "MMH74H6OCI5CHPX1OS56PI6HSEGAVZ9PU8V8KTXL87ADBB23VJX1OFDDPAOZA53MIPRI4ZQ54T8SI2FRLMPMCIBP5RSKE7LCEX5WTU952164HV5W46NYQQKAOCMNHF07I5NU7T71NTTKLHHJW5QHUWWXN4HQHWYWB9VLHKZK9WL669ZH5D0LZSMVI0HCLQT157JLV5CLGFI7L00OFAVE5N7SW9CRDW9SCUA9ZNV9APEUJPKS936K5P5SA1YV3VIT";
+            SdkApiSettings.CompanyKey = "1df53a2d-26aa-4ef1-9f3c-09a1092e5413";
+            SdkApiSettings.ApplicationKey = "d7726cbf-e51f-4e0e-a3bb-132913ad8032";
+            SdkApiSettings.Secret = "W2ANVUVRQS7AKBFCZLKHGLWXCC6FRUGXAV3O3E33H7D1ZULX6ME6UKOKGNKSXPA6LK9YH1JUSR9JI58S0JIEPKCZHSIQ4KF27GPOUWPFDTODKECLP11OG5RBHJRZT20HMHLBPT7D4DB559PCP6BCS1VBZOHKF0VK3G1D2B564XUD4VFH4OJW1YZVVKLBLW8ER0CYIMKOBEH4GSGEI9Q1Q9SERGRSZ3UHZQVDTR9SD4UWQ4ODDH3MGGXSI7GC42ZH";
             SdkApiSettings.TppLegalName = "EXTHAND";
-            SdkApiSettings.IsSandbox = true;
+            SdkApiSettings.IsSandbox = false;
 
-            BankingSDK.BE.ING.BeIngConnector bankConnector = new BeIngConnector(generalBankSettings);
-            //BankingSDK.BE.KBC.BeKbcConnector bankConnector = new BeKbcConnector(generalBankSettings);
+            
+            //BankingSDK. bankConnector = new Connector(generalBankSettings);
+            BankingSDK.BE.KBC.BeKbcConnector bankConnector = new BeKbcConnector(generalBankSettings);
 
             string userId = Guid.NewGuid().ToString();
             string userContect =  ( await bankConnector.RegisterUserAsync(userId)).GetData().ToJson();
@@ -50,7 +54,7 @@ namespace TestApp
                 FlowId = SdkApiSettings.ApplicationKey,
                 FrequencyPerDay = 4,
                 RedirectUrl = callBackUrl,
-                PsuIp ="127.0.0.1", 
+                PsuIp ="10.10.10.10", 
                 SingleAccount= "BE91732047678076"
             };
 

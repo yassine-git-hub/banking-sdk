@@ -141,6 +141,8 @@ namespace BankingSDK.Base.BNP
 
         public async Task<BankingResult<string>> RequestAccountsAccessAsync(AccountsAccessRequest model)
         {
+            Console.Write("Model : FLOWID");
+
             FlowContext flowContext = new FlowContext
             {
                 Id = model.FlowId,
@@ -148,21 +150,25 @@ namespace BankingSDK.Base.BNP
                 FlowType = FlowType.AccountsAccess,
                 RedirectUrl = model.RedirectUrl
             };
+            Console.Write("Model : FLOWID"+model.FlowId);
             var brand = ConnectorType == ConnectorType.BE_HELLO_BANK ? "hb" : (ConnectorType == ConnectorType.BE_FINTRO ? "fintro" : "bnppf");
             var redirect = $"{authUrl2}/authorize?response_type=code&client_id={_settings.AppClientId}&redirect_uri={WebUtility.UrlEncode($"{model.RedirectUrl}")}&scope=aisp&state={model.FlowId}&brand={brand}";
-            return new BankingResult<string>(ResultStatus.REDIRECT, "", redirect, null, flowContext: flowContext);
+            return new BankingResult<string>(ResultStatus.REDIRECT, model.RedirectUrl, redirect, null, flowContext: flowContext);
         }
 
         public async Task<BankingResult<IUserContext>> RequestAccountsAccessFinalizeAsync(FlowContext flowContext, string queryString)
         {
+            Console.Write("Quand meme bg ");
+            
+
             var query = HttpUtility.ParseQueryString(queryString);
             var error = query.Get("error");
             if (error != null)
             {
+
                 await LogAsync(apiUrl, 500, Http.Get, query.Get("error_description"));
                 throw new ApiCallException(query.Get("error_description"));
             }
-
             var code = query.Get("code");
             var auth = await GetToken(code, flowContext.RedirectUrl);
             var accounts = await GetAccountsAsync($"{auth.token_type} {auth.access_token}");
@@ -560,6 +566,7 @@ namespace BankingSDK.Base.BNP
 
         private async Task<AccessToken> GetToken(string authCode, string redirectUrl)
         {
+            //Console.Write("    \nCODE:"+authCode);
             var content = new StringContent($"grant_type=authorization_code&code={authCode}&client_id={_settings.AppClientId}&redirect_uri={redirectUrl}&scope=aisp&client_secret={_settings.AppClientSecret}", Encoding.UTF8, "application/x-www-form-urlencoded");
 
             var client = GetAuthClient();

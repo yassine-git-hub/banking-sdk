@@ -28,20 +28,22 @@ namespace GettingStarted
     /// </summary>
     class Program
     {
-        const string NcaId = "VALID_CLIENT_ID";
-        const string TlsCertificatePath = "BankingSDK/certificate1.pfx";
+        const string NcaId = "PSDBE-NBB-0652642328"; 
+        const string TlsCertificatePath = @"C:\Users\Yassine\Documents\StageEntrainement\BankingSDK - Copie\BankingSDK\Test\TestApp\example_eidas_client_tls.cer";
         const string TlsCertificatePassword = "password";
-        const string SigningCertificatePath = "BankingSDK/certificate2.pfx";
-        const string SigningCertificatePassword = "password";
+        const string SigningCertificatePath = @"C:\Users\Yassine\Documents\StageEntrainement\BankingSDK - Copie\BankingSDK\Test\TestApp\example_eidas_client_signing.cer";
+        const string SigningCertificatePassword = "password2";
 
-        const string BankingSDKCompanyKey = "BANKINGSDK_COMPANY_KEY";
-        const string BankingSDKApplicationKey = "BANKINGSDK_APPLICATION_KEY";
-        const string BankingSDKSecret = "BANKINGSDK_APPLICATION_SECRET";
-        const string BankingSDKTTPName = "TTP_NAME";
+        const string BankingSDKCompanyKey = "1df53a2d-26aa-4ef1-9f3c-09a1092e5413";
+        const string BankingSDKApplicationKey = "d7726cbf-e51f-4e0e-a3bb-132913ad8032";
+        const string BankingSDKSecret = "W2ANVUVRQS7AKBFCZLKHGLWXCC6FRUGXAV3O3E33H7D1ZULX6ME6UKOKGNKSXPA6LK9YH1JUSR9JI58S0JIEPKCZHSIQ4KF27GPOUWPFDTODKECLP11OG5RBHJRZT20HMHLBPT7D4DB559PCP6BCS1VBZOHKF0VK3G1D2B564XUD4VFH4OJW1YZVVKLBLW8ER0CYIMKOBEH4GSGEI9Q1Q9SERGRSZ3UHZQVDTR9SD4UWQ4ODDH3MGGXSI7GC42ZH";
+        const string BankingSDKTTPName = "EXTHAND";
 
-        const string StoreFolderPath = "BankingSDK/";
+        const string StoreFolderPath = @"C:\Users\Yassine\Documents\StageEntrainement\BankingSDK - Copie\BankingSDK\Test\GettingStarted\BankingSDK";
+        const string AppClientId = "62fdf373-22da-4e03-b4b8-9d0a3f839cf7";
+        const string AppClientSecret = "b764173f83ac273f33d9f2f8a8994621e064f8a2048cf0f16ea33cf082300e0b82788b6c957583a159d11db5b12bf450";
 
-        const string RedirectURL = "https://developer.bankingsdk.com/callback";
+        const string RedirectURL = "https://developer.bankingsdk.com/Callback";
 
 
         static async Task Main(string[] args)
@@ -53,7 +55,7 @@ namespace GettingStarted
             string userId = GetUserId();
 
             // Initialize Connector
-            IBankingConnector bankConnector = BankingFactory.GetConnector(ConnectorType.BE_CRELAN);
+            IBankingConnector bankConnector = BankingFactory.GetConnector(ConnectorType.BE_BNP);
 
             try
             {
@@ -61,20 +63,29 @@ namespace GettingStarted
                 string userContext = FetchUserContext(userId);
                 if (userContext == null)
                 {
+                    Console.Write("Je suis rentré la");
+
                     // No context found, initialize a new one
                     await bankConnector.RegisterUserAsync(userId);
+                    Console.Write("Je suis rentré la aussi ");
+
 
                     // Assume the user didn't gave access to his accounts yet
+                    
                     await RequestAccountsAccessAsync(bankConnector);
+                    Console.Write("Je suis rentré laaaaaaaaaaaaaaaaaaaaaaaaaaaa ");
+
                 }
                 else
                 {
                     // Existing context found
                     // Assume valid account access granted
                     bankConnector.UserContext = userContext;
+                    Console.Write("Je suis rentré ici");
                 }
 
                 // Fetch account list and display their balances
+                Console.Write("Display");
                 await DisplayAccountBalancesAsync(bankConnector);
             }
             finally
@@ -97,9 +108,12 @@ namespace GettingStarted
             // Configure BankingSDK general settings
             BankSettings generalBankSettings = new BankSettings
             {
+
                 NcaId = NcaId,
                 TlsCertificate = new X509Certificate2(TlsCertificatePath, TlsCertificatePassword),
-                SigningCertificate = new X509Certificate2(SigningCertificatePath, SigningCertificatePassword)
+                SigningCertificate = new X509Certificate2(SigningCertificatePath, SigningCertificatePassword),
+                AppClientId= AppClientId,
+                AppClientSecret= AppClientSecret
             };
             BankingFactory.SdkSettings.Set(generalBankSettings, BankingSDKCompanyKey, BankingSDKApplicationKey, BankingSDKSecret, BankingSDKTTPName, true);
         }
@@ -151,10 +165,10 @@ namespace GettingStarted
             // Initialize account access request
             BankingResult<string> bankingResult = await bankConnector.RequestAccountsAccessAsync(new AccountsAccessRequest
             {
-                FlowId = "STATE", //Guid.NewGuid().ToString(),
-                FrequencyPerDay = 4,
+                
+                FlowId =  "STATE", //Guid.NewGuid().ToString()
+                FrequencyPerDay = 2,
                 RedirectUrl = RedirectURL,
-                PsuIp = "127.0.0.1"
             });
 
             if (bankingResult.GetStatus() == ResultStatus.REDIRECT)
@@ -167,7 +181,7 @@ namespace GettingStarted
                 Console.WriteLine($"URL: {bankURL}");
                 Console.Write("Enter code: ");
                 string queryString = Console.ReadLine();
-
+                Console.Write(flowContext);
                 // Finalize authentication
                 BankingResult<IUserContext> result = await bankConnector.RequestAccountsAccessFinalizeAsync(flowContext, queryString);
                 if (result.GetStatus() == ResultStatus.DONE)
@@ -175,6 +189,7 @@ namespace GettingStarted
                     Console.WriteLine("RequestAccountsAccess succeeded");
                     return;
                 }
+                
             }
 
             throw new Exception("RequestAccountsAccess failed");

@@ -15,7 +15,16 @@ namespace BankingSDK.Base.ING.Extensions
         {
             var signingString = $"(request-target): {method.Method.ToLower()} {path}\ndate: {client.DefaultRequestHeaders.GetValues("Date").First()}\ndigest: {client.DefaultRequestHeaders.GetValues("Digest").First()}\nx-request-id: {client.DefaultRequestHeaders.GetValues("X-Request-ID").First()}";
             var headerList = "(request-target) date digest x-request-id";
-            var signature = Convert.ToBase64String(cert.GetRSAPrivateKey().SignData(Encoding.UTF8.GetBytes(signingString), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1));
+            Console.Write("CERTif : "+cert.GetRSAPublicKey());
+            Console.Write("------------------------------------------------------------------------------" );
+
+            Console.Write("CERT" + signingString);
+            Console.Write("------------------------------------------------------------------------------");
+
+            Console.Write("CERT" + headerList);
+            Console.Write("\nCERT22        " + RSASignaturePadding.Pkcs1);
+
+            var signature = Convert.ToBase64String(cert.GetRSAPublicKey().SignData(Encoding.UTF8.GetBytes(signingString), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1));
 
             var signatureHeader = (addSig ? "Signature " : "") + $"keyId=\"{keyId}\",algorithm=\"rsa-sha256\",headers=\"{headerList}\",signature=\"{signature}\"";
             client.DefaultRequestHeaders.Add(headerName, signatureHeader);

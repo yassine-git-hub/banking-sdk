@@ -133,9 +133,8 @@ namespace BankingSDK.BE.Belfius
 
 
                 var client = GetClient();
-                Console.Write("Je vais ecrire Yass" + model);
 
-                client.DefaultRequestHeaders.Add("Accept", "application/vnd.belfius.api+json; version=1");
+                client.DefaultRequestHeaders.Add("Accept", "application/vnd.belfius.api+json; version=2");
                 client.DefaultRequestHeaders.Add("Accept-Language", "en");
                 client.DefaultRequestHeaders.Add("Redirect-URI", $"{model.RedirectUrl}");
                 client.DefaultRequestHeaders.Add("Code-Challenge-Method", "S256");
@@ -150,6 +149,9 @@ namespace BankingSDK.BE.Belfius
                 }
                 client.DefaultRequestHeaders.Add("Code-Challenge", codeChallenge);
                 var url = basePath + $"/consent-uris?scope=AIS&iban={model.SingleAccount}";
+                Console.Write("Je vais ecrire Yass" + url);
+                Console.Write("Je vais ecrire Code" + codeChallenge);
+
                 var result = await client.GetAsync(url);
 
                 string rawData = await result.Content.ReadAsStringAsync();

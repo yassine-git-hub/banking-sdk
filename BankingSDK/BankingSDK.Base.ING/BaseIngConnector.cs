@@ -124,18 +124,37 @@ namespace BankingSDK.Base.ING
 
         public async Task<BankingResult<string>> RequestAccountsAccessAsync(AccountsAccessRequest model)
         {
+            Console.Write("TEST APP : --0");
+
             try
             {
+                Console.Write("TEST APP : 0");
+
                 var clientAuth = await GetClientToken();
+                Console.Write("TEST APP : 1");
                 var client = GetClient();
+                Console.Write("TEST APP : 2");
+
                 client.DefaultRequestHeaders.Add("Authorization", clientAuth.Token);
+                Console.Write("TEST APP : 3");
+
                 var scope = HttpUtility.UrlEncode("payment-accounts:balances:view payment-accounts:transactions:view");
+                Console.Write("TEST APP : 4");
+
                 var url = $"/oauth2/authorization-server-url?scope={scope}&redirect_uri={model.RedirectUrl}&response_type=code&country_code={_countryCode}";
+                Console.Write("TEST APP : 5");
+
                 client.SignRequest(_settings.SigningCertificate, HttpMethod.Get, url, "Signature", clientAuth.client_id);
+                Console.Write("TEST APP : 6");
+
                 var result = await client.GetAsync(url);
+                Console.Write("TEST APP : 7");
 
                 string rawData = await result.Content.ReadAsStringAsync();
+                Console.Write("TEST APP : 8");
+
                 var redirect = JsonConvert.DeserializeObject<IngRedirect>(rawData).location + $"?client_id={clientAuth.client_id}&scope={scope}&redirect_uri={HttpUtility.UrlEncode(model.RedirectUrl)}&response_type=code&state={HttpUtility.UrlEncode(model.FlowId)}";
+                Console.Write("TEST APP : 9");
 
                 var flowContext = new FlowContext
                 {
@@ -522,6 +541,7 @@ namespace BankingSDK.Base.ING
             client.DefaultRequestHeaders.Add("TPP-Signature-Certificate", $"-----BEGIN CERTIFICATE-----{Convert.ToBase64String(_settings.SigningCertificate.RawData)}-----END CERTIFICATE-----");
             client.SignRequest(_settings.SigningCertificate, HttpMethod.Post, "/oauth2/token", "Authorization", $"SN={_settings.SigningCertificate.SerialNumber},CA={_settings.SigningCertificate.Issuer}", true);
             var result = await client.PostAsync("/oauth2/token", content);
+            Console.Write("Mon");
 
             return JsonConvert.DeserializeObject<BerlinGroupAccessData>(await result.Content.ReadAsStringAsync());
         }

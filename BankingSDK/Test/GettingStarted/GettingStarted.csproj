@@ -13,6 +13,9 @@
     <Reference Include="BankingSDK">
       <HintPath>BankingSDK\BankingSDK.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\TestApp\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

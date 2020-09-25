@@ -46,7 +46,7 @@ namespace TestWebApp.Controllers
                 SingleAccount = account,
                 FrequencyPerDay = 2,
                 PsuIp = "10.10.10.10",
-                RedirectUrl = Storage.CallbackUrl
+                RedirectUrl = "https://localhost:44396/Callback"
             });
             Console.Write("finlaise : ");
 
